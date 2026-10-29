@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Year 2027 - Modern Cyber Celebration</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #020617;
+            /* Disable text selection across all browser engines */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            /* Prevent unwanted touch highlight or scroll bounces on mobile */
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .font-digits {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Responsive Viewport Safe Heights */
+        .min-h-screen-custom {
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+
+        /* Modern Glassmorphism Styling */
+        .ultra-glass {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+        .ultra-glass-hover {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        @media (hover: hover) and (pointer: fine) {
+            .ultra-glass-hover:hover {
+                transform: translateY(-6px) scale(1.02);
+                border-color: rgba(245, 158, 11, 0.4);
+                box-shadow: 0 25px 60px rgba(245, 158, 11, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            }
+        }
+
+        /* Neon Text Glow */
+        .glow-amber {
+            text-shadow: 0 0 20px rgba(245, 158, 11, 0.6), 0 0 40px rgba(245, 158, 11, 0.3);
+        }
+        .glow-pink {
+            text-shadow: 0 0 20px rgba(236, 72, 153, 0.6), 0 0 40px rgba(236, 72, 153, 0.3);
+        }
+        
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            touch-action: none;
+        }
+        .canvas-interactive {
+            cursor: crosshair;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-white min-h-screen-custom flex flex-col justify-between overflow-x-hidden relative selection:bg-amber-500 selection:text-black">
+
+    <!-- Canvas for Particle / Fireworks Effect & Starry Night Sky Background -->
+    <canvas id="fireworksCanvas" class="canvas-interactive"></canvas>
+
+    <!-- Mini Game Floating HUD Bar -->
+    <div id="gameHUD" class="fixed top-3 sm:top-5 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2.5 sm:gap-4 bg-slate-900/85 backdrop-blur-xl border border-amber-500/30 py-2 px-4 sm:px-6 rounded-full shadow-2xl transition-all max-w-[92vw] sm:max-w-none">
+        <div class="flex items-center gap-1.5 sm:gap-2">
+            <span class="text-lg sm:text-xl animate-bounce">🎯</span>
+            <span class="text-[10px] sm:text-xs uppercase font-extrabold tracking-widest text-amber-400">Score</span>
+            <span id="gameScore" class="font-digits text-base sm:text-xl font-extrabold text-white min-w-[35px] sm:min-w-[45px] text-center transition-transform">0</span>
+        </div>
+        <div class="h-4 w-[1px] bg-slate-700/80"></div>
+        <div class="flex items-center gap-1 sm:gap-1.5">
+            <span class="text-[10px] sm:text-xs uppercase font-extrabold tracking-widest text-slate-400">Combo</span>
+            <span id="gameCombo" class="font-digits text-xs sm:text-sm font-bold text-pink-400 bg-pink-500/10 px-2 py-0.5 rounded-full border border-pink-500/20">x1</span>
+        </div>
+        <div class="h-4 w-[1px] bg-slate-700/80"></div>
+        <button onclick="resetGameScore()" class="text-xs text-slate-400 hover:text-amber-300 font-semibold transition underline cursor-pointer p-1">Reset</button>
+    </div>
+
+    <!-- Header Section -->
+    <header class="relative z-10 text-center pt-16 sm:pt-20 px-4">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs sm:text-sm font-semibold mb-4 sm:mb-6 shadow-lg backdrop-blur-md">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            ROAD TO NEW YEAR 2027
+        </div>
+
+        <!-- Current Date Display Badge -->
+        <div class="mb-3 sm:mb-4">
+            <span id="currentDateBadge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/80 border border-slate-700/60 text-slate-300 text-xs sm:text-sm font-medium shadow-md backdrop-blur-md">
+                📅 Loading date...
+            </span>
+        </div>
+
+        <h1 class="text-3xl sm:text-6xl md:text-7xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-amber-200 bg-clip-text text-transparent drop-shadow-sm">
+            Countdown to 2027
+        </h1>
+        <p class="text-slate-400 text-xs sm:text-base mt-2 sm:mt-3 max-w-lg mx-auto font-medium leading-relaxed">
+            Welcome the future with excitement, hope, and grand fireworks.
+        </p>
+    </header>
+
+    <!-- Main Content: Countdown Grid -->
+    <main class="relative z-10 my-auto py-6 sm:py-8 px-4 w-full max-w-5xl mx-auto">
+        <div id="countdownContainer" class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-8 sm:mb-12">
+            
+            <!-- Days -->
+            <div class="ultra-glass ultra-glass-hover rounded-2xl sm:rounded-3xl p-4 sm:p-8 text-center relative overflow-hidden group">
+                <div class="absolute -top-12 -right-12 w-24 h-24 bg-amber-500/10 rounded-full blur-xl group-hover:bg-amber-500/20 transition"></div>
+                <span id="days" class="font-digits text-4xl sm:text-7xl font-extrabold bg-gradient-to-b from-white to-slate-300 bg-clip-text text-transparent block tracking-tight">00</span>
+                <span class="text-[10px] sm:text-sm font-bold uppercase tracking-widest text-amber-400 mt-2 sm:mt-3 block">Days</span>
+            </div>
+
+            <!-- Hours -->
+            <div class="ultra-glass ultra-glass-hover rounded-2xl sm:rounded-3xl p-4 sm:p-8 text-center relative overflow-hidden group">
+                <div class="absolute -top-12 -right-12 w-24 h-24 bg-pink-500/10 rounded-full blur-xl group-hover:bg-pink-500/20 transition"></div>
+                <span id="hours" class="font-digits text-4xl sm:text-7xl font-extrabold bg-gradient-to-b from-white to-slate-300 bg-clip-text text-transparent block tracking-tight">00</span>
+                <span class="text-[10px] sm:text-sm font-bold uppercase tracking-widest text-pink-400 mt-2 sm:mt-3 block">Hours</span>
+            </div>
+
+            <!-- Minutes -->
+            <div class="ultra-glass ultra-glass-hover rounded-2xl sm:rounded-3xl p-4 sm:p-8 text-center relative overflow-hidden group">
+                <div class="absolute -top-12 -right-12 w-24 h-24 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition"></div>
+                <span id="minutes" class="font-digits text-4xl sm:text-7xl font-extrabold bg-gradient-to-b from-white to-slate-300 bg-clip-text text-transparent block tracking-tight">00</span>
+                <span class="text-[10px] sm:text-sm font-bold uppercase tracking-widest text-purple-400 mt-2 sm:mt-3 block">Minutes</span>
+            </div>
+
+            <!-- Seconds -->
+            <div class="ultra-glass ultra-glass-hover rounded-2xl sm:rounded-3xl p-4 sm:p-8 text-center relative overflow-hidden group border-amber-500/30">
+                <div class="absolute -top-12 -right-12 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl group-hover:bg-cyan-500/20 transition"></div>
+                <span id="seconds" class="font-digits text-4xl sm:text-7xl font-extrabold bg-gradient-to-b from-amber-300 to-amber-500 bg-clip-text text-transparent block glow-amber tracking-tight">00</span>
+                <span class="text-[10px] sm:text-sm font-bold uppercase tracking-widest text-cyan-400 mt-2 sm:mt-3 block">Seconds</span>
+            </div>
+
+        </div>
+
+        <!-- Celebration Banner (Hidden by default until 2027) -->
+        <div id="celebrationBanner" class="hidden text-center ultra-glass rounded-2xl sm:rounded-3xl p-6 sm:p-14 shadow-2xl border border-amber-500/40 mb-8 sm:mb-10 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-pink-500/10 to-purple-500/10 animate-pulse"></div>
+            <h2 class="text-2xl sm:text-6xl font-black text-transparent bg-gradient-to-r from-amber-300 via-pink-300 to-amber-400 bg-clip-text mb-3 sm:mb-4 glow-pink">
+                ✨ HAPPY NEW YEAR 2027! ✨
+            </h2>
+            <p class="text-slate-200 text-sm sm:text-xl max-w-2xl mx-auto font-light leading-relaxed">
+                May 2027 unfold unlimited prosperity, boundless joy, and amazing breakthroughs!
+            </p>
+        </div>
+
+        <!-- Quote Box & Interactive Controls -->
+        <div class="ultra-glass rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-center max-w-2xl mx-auto relative overflow-hidden">
+            <div class="inline-flex items-center gap-1.5 text-amber-400 text-xs font-bold uppercase tracking-widest mb-2 sm:mb-3">
+                <span>💡</span> Daily Inspiration
+            </div>
+            <p id="quoteText" class="text-slate-300 text-xs sm:text-base italic transition-opacity duration-500 font-light leading-relaxed min-h-[42px] flex items-center justify-center">
+                "Every second is a fresh start. Don't look back; the future is full of golden opportunities."
+            </p>
+
+            <div class="mt-5 sm:mt-6 flex flex-wrap justify-center items-center gap-2.5 sm:gap-3">
+                <button onclick="triggerCelebration(true)" class="flex-1 sm:flex-none min-w-[140px] px-4 py-3 rounded-xl sm:rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 text-slate-950 font-extrabold text-xs sm:text-sm shadow-xl hover:shadow-amber-500/20 transition transform active:scale-95 cursor-pointer flex items-center justify-center gap-2">
+                    <span>🎆</span> Launch Burst
+                </button>
+                <button onclick="toggleSound()" id="soundBtn" class="flex-1 sm:flex-none min-w-[140px] px-4 py-3 rounded-xl sm:rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 text-amber-300 font-bold text-xs sm:text-sm border border-amber-500/30 shadow-lg transition cursor-pointer flex items-center justify-center gap-2">
+                    <span>🔊</span> Sound: On
+                </button>
+                <button onclick="toggleFullscreen()" id="fullscreenBtn" class="px-3 py-3 rounded-xl sm:rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 font-bold text-xs sm:text-sm border border-slate-700 shadow-lg transition cursor-pointer flex items-center justify-center gap-1.5">
+                    <span>⛶</span>
+                </button>
+            </div>
+            <p class="text-[11px] sm:text-xs text-slate-400 mt-3 sm:mt-4 font-medium">✨ Tap or click anywhere to detonate custom fireworks & score points!</p>
+        </div>
+    </main>
+
+        <!-- Footer -->
+        <footer class="relative z-10 text-center py-4 sm:py-6 text-slate-500 text-[11px] sm:text-sm font-medium px-4">
+            <p>&copy; 2027 Countdown Web App. Universal Support across Mobile & Desktop.</p>
+        </footer>
+
+        <!-- Custom Modal / Notification Box -->
+        <div id="customModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden opacity-0 transition-all duration-300 px-4">
+            <div class="ultra-glass rounded-2xl sm:rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl border border-amber-500/30 transform scale-90 transition-transform duration-300" id="modalContent">
+                <div class="text-4xl sm:text-5xl mb-3 sm:mb-4 animate-bounce">🎇</div>
+                <h3 id="modalTitle" class="text-xl sm:text-2xl font-extrabold text-amber-300 mb-2">Celebration Mode On!</h3>
+                <p id="modalMessage" class="text-slate-300 text-xs sm:text-base mb-6 leading-relaxed">
+                    Fireworks launched! Wishing you an incredible, successful, and joyful 2027 ahead.
+                </p>
+                <button onclick="closeModal()" class="w-full py-3 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold text-xs sm:text-sm hover:opacity-95 shadow-lg transition cursor-pointer">
+                    Got it!
+                </button>
+            </div>
+        </div>
+
+    <!-- Script Logic -->
+    <script>
+        // Global variables for Audio & Sound state (declared at the top to prevent hoisting errors)
+        let soundEnabled = true;
+        let audioCtx = null;
+
+        // Target Date: January 1, 2027 00:00:00
+        const targetDate = new Date("January 1, 2027 00:00:00").getTime();
+        let autoCelebrated = false;
+
+        // Quotes array in US English
+        const quotes = [
+            "\"Every second is a fresh start. Don't look back; the future is full of golden opportunities.\"",
+            "\"New Year is the perfect time to set new goals and renew your commitments in life.\"",
+            "\"Great success begins with small, consistent steps every single day. Step into 2027 with action!\"",
+            "\"The future belongs to those who believe in the beauty of their dreams. Cheers to 2027!\""
+        ];
+        let currentQuoteIndex = 0;
+        setInterval(() => {
+            currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+            const quoteEl = document.getElementById("quoteText");
+            quoteEl.style.opacity = 0;
+            setTimeout(() => {
+                quoteEl.innerText = quotes[currentQuoteIndex];
+                quoteEl.style.opacity = 1;
+            }, 500);
+        }, 7000);
+
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) {
+                    audioCtx = new AudioContextClass();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        // Clock Ticking Sound Synthesis
+        function playClockTickSound() {
+            if (!soundEnabled || !audioCtx) return;
+            try {
+                const now = audioCtx.currentTime;
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = "sine";
+                // High crisp tick tone
+                osc.frequency.setValueAtTime(1200, now);
+                osc.frequency.exponentialRampToValueAtTime(400, now + 0.03);
+
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.03);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Countdown Timer Function
+        function updateCountdown() {
+            const now = new Date();
+            const distance = targetDate - now.getTime();
+
+            // Auto Update Current Date Display in DD/MM/YYYY format
+            const dateBadgeEl = document.getElementById("currentDateBadge");
+            if (dateBadgeEl) {
+                const day = String(now.getDate()).padStart(2, '0');
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const year = now.getFullYear();
+                dateBadgeEl.innerText = `📅 ${day}/${month}/${year}`;
+            }
+
+            if (distance <= 0) {
+                document.getElementById("countdownContainer").classList.add("hidden");
+                document.getElementById("celebrationBanner").classList.remove("hidden");
+                document.getElementById("days").innerText = "00";
+                document.getElementById("hours").innerText = "00";
+                document.getElementById("minutes").innerText = "00";
+                document.getElementById("seconds").innerText = "00";
+
+                if (!autoCelebrated) {
+                    autoCelebrated = true;
+                    fireworksActive = true;
+                    triggerCelebration(false);
+                }
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerText = String(days).padStart(2, '0');
+            document.getElementById("hours").innerText = String(hours).padStart(2, '0');
+            document.getElementById("minutes").innerText = String(minutes).padStart(2, '0');
+            document.getElementById("seconds").innerText = String(seconds).padStart(2, '0');
+
+            // Play clock tick sound every second
+            playClockTickSound();
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // Canvas Fireworks & Starry Background Rendering
+        const canvas = document.getElementById("fireworksCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let backgroundStars = [];
+
+        function initStars() {
+            backgroundStars = [];
+            const starCount = Math.min(250, Math.floor((canvas.width * canvas.height) / 2200));
+            for (let i = 0; i < starCount; i++) {
+                backgroundStars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 1.2 + 0.3,
+                    alpha: Math.random(),
+                    speed: Math.random() * 0.015 + 0.005,
+                    color: Math.random() > 0.85 ? '#93c5fd' : (Math.random() > 0.7 ? '#fef08a' : '#ffffff')
+                });
+            }
+        }
+
+        function resizeCanvas() {
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+            ctx.scale(dpr, dpr);
+            initStars();
+        }
+        window.addEventListener("resize", resizeCanvas);
+        window.addEventListener("orientationchange", () => setTimeout(resizeCanvas, 200));
+        resizeCanvas();
+
+        let particles = [];
+        let fireworksActive = false;
+
+        // Mini Game Logic Variables
+        let score = 0;
+        let combo = 1;
+        let lastTapTime = 0;
+        const scoreEl = document.getElementById("gameScore");
+        const comboEl = document.getElementById("gameCombo");
+
+        function addScore(points) {
+            const now = Date.now();
+            if (now - lastTapTime < 1000) {
+                combo = Math.min(combo + 1, 10);
+            } else {
+                combo = 1;
+            }
+            lastTapTime = now;
+
+            score += points * combo;
+            scoreEl.innerText = score;
+            comboEl.innerText = `x${combo}`;
+
+            scoreEl.classList.add("scale-125", "text-amber-300");
+            setTimeout(() => scoreEl.classList.remove("scale-125", "text-amber-300"), 150);
+        }
+
+        function resetGameScore() {
+            score = 0;
+            combo = 1;
+            scoreEl.innerText = "0";
+            comboEl.innerText = "x1";
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 7 + 2;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.018 + 0.01;
+                this.size = Math.random() * 2.5 + 1.2;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.08; // gravity
+                this.alpha -= this.decay;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function createFirework(x, y, isManual = false) {
+            const colors = ["#f59e0b", "#ec4899", "#a855f7", "#38bdf8", "#22c55e", "#f43f5e", "#facc15"];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const particleCount = isManual ? (window.innerWidth < 640 ? 50 : 75) : 40;
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle(x, y, color));
+            }
+            playFireworkSound();
+
+            if (isManual) {
+                addScore(100);
+            }
+        }
+
+        // Tap / Click Event Listener for Canvas Mini Game (Cross-device compatible)
+        function handlePointerTrigger(e) {
+            if (e.target.closest("button") || e.target.closest("#customModal") || e.target.closest("#gameHUD")) return;
+            const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : window.innerWidth / 2);
+            const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : window.innerHeight / 2);
+            createFirework(clientX, clientY, true);
+        }
+
+        window.addEventListener("pointerdown", handlePointerTrigger);
+
+        function renderBackground() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            // Cosmic Deep Night Sky Gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, height);
+            gradient.addColorStop(0, "#020617");
+            gradient.addColorStop(0.5, "#0b1329");
+            gradient.addColorStop(1, "#020617");
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, height);
+
+            // Subtle nebula accent
+            const nebula = ctx.createRadialGradient(
+                width * 0.5, height * 0.4, 10,
+                width * 0.5, height * 0.4, width * 0.6
+            );
+            nebula.addColorStop(0, "rgba(29, 78, 216, 0.12)");
+            nebula.addColorStop(0.5, "rgba(126, 34, 206, 0.06)");
+            nebula.addColorStop(1, "rgba(0, 0, 0, 0)");
+            ctx.fillStyle = nebula;
+            ctx.fillRect(0, 0, width, height);
+
+            // Draw & twinkle starry sky
+            backgroundStars.forEach(star => {
+                star.alpha += star.speed;
+                if (star.alpha > 1 || star.alpha < 0.2) star.speed = -star.speed;
+
+                ctx.save();
+                ctx.globalAlpha = Math.max(0.2, Math.min(1, star.alpha));
+                ctx.fillStyle = star.color;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            });
+        }
+
+        function animateFireworks() {
+            renderBackground();
+
+            if (fireworksActive && Math.random() < 0.15) {
+                createFirework(Math.random() * window.innerWidth, Math.random() * (window.innerHeight / 2));
+            }
+
+            // Cap particle rendering for mobile performance
+            if (particles.length > 300) {
+                particles.splice(0, particles.length - 300);
+            }
+
+            particles.forEach((p, index) => {
+                p.update();
+                p.draw();
+                if (p.alpha <= 0) {
+                    particles.splice(index, 1);
+                }
+            });
+
+            requestAnimationFrame(animateFireworks);
+        }
+        animateFireworks();
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById("soundBtn");
+            if (soundEnabled) {
+                initAudio();
+                btn.innerHTML = "<span>🔊</span> Sound: On";
+                btn.className = "flex-1 sm:flex-none min-w-[140px] px-4 py-3 rounded-xl sm:rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 text-amber-300 font-bold text-xs sm:text-sm border border-amber-500/30 shadow-lg transition cursor-pointer flex items-center justify-center gap-2";
+            } else {
+                btn.innerHTML = "<span>🔇</span> Sound: Off";
+                btn.className = "flex-1 sm:flex-none min-w-[140px] px-4 py-3 rounded-xl sm:rounded-2xl bg-slate-900/80 hover:bg-slate-800/80 text-slate-500 font-semibold text-xs sm:text-sm border border-slate-800 transition cursor-pointer flex items-center justify-center gap-2";
+            }
+        }
+
+        // Fullscreen toggle for Windows/Android/iOS
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else if (document.exitFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        // Firework Explosion Sound Synthesis
+        function playFireworkSound() {
+            if (!soundEnabled || !audioCtx) return;
+            try {
+                const now = audioCtx.currentTime;
+
+                // 1. Low Frequency Boom
+                const osc = audioCtx.createOscillator();
+                const oscGain = audioCtx.createGain();
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(160, now);
+                osc.frequency.exponentialRampToValueAtTime(30, now + 0.35);
+
+                oscGain.gain.setValueAtTime(0.4, now);
+                oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+                osc.connect(oscGain);
+                oscGain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.35);
+
+                // 2. Burst Noise Effect
+                const bufferSize = Math.floor(audioCtx.sampleRate * 0.25);
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const output = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = Math.random() * 2 - 1;
+                }
+
+                const whiteNoise = audioCtx.createBufferSource();
+                whiteNoise.buffer = buffer;
+
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = "bandpass";
+                filter.frequency.setValueAtTime(900, now);
+
+                const noiseGain = audioCtx.createGain();
+                noiseGain.gain.setValueAtTime(0.25, now);
+                noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+
+                whiteNoise.connect(filter);
+                filter.connect(noiseGain);
+                noiseGain.connect(audioCtx.destination);
+
+                whiteNoise.start(now);
+                whiteNoise.stop(now + 0.25);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function triggerCelebration(showModal = true) {
+            initAudio();
+            fireworksActive = true;
+            for (let i = 0; i < 6; i++) {
+                setTimeout(() => {
+                    createFirework(Math.random() * window.innerWidth, Math.random() * (window.innerHeight / 2));
+                }, i * 200);
+            }
+            if (showModal) {
+                openModal();
+            }
+            setTimeout(() => {
+                if (!autoCelebrated) fireworksActive = false;
+            }, 5000);
+        }
+
+        function openModal() {
+            const modal = document.getElementById("customModal");
+            const modalContent = document.getElementById("modalContent");
+            modal.classList.remove("hidden");
+            setTimeout(() => {
+                modal.classList.remove("opacity-0");
+                modalContent.classList.remove("scale-90");
+                modalContent.classList.add("scale-100");
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById("customModal");
+            const modalContent = document.getElementById("modalContent");
+            modal.classList.add("opacity-0");
+            modalContent.classList.remove("scale-100");
+            modalContent.classList.add("scale-90");
+            setTimeout(() => {
+                modal.classList.add("hidden");
+            }, 300);
+        }
+
+        // Initialize Audio context on first user gesture (Cross-browser compliance)
+        ['click', 'touchstart', 'pointerdown'].forEach(evt => {
+            window.addEventListener(evt, () => {
+                if (soundEnabled) initAudio();
+            }, { once: true });
+        });
+
+        // Disable text copying and context menu actions
+        document.addEventListener('copy', (e) => e.preventDefault());
+        document.addEventListener('cut', (e) => e.preventDefault());
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+    </script>
+</body>
+</html>
